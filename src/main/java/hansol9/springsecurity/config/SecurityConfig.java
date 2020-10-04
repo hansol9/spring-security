@@ -1,5 +1,6 @@
 package hansol9.springsecurity.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
@@ -8,6 +9,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -58,6 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/", "/info","/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .mvcMatchers("/user").hasRole("USER")
+                // static resource -> WebSecurity
+//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .anyRequest().authenticated()
 //                .accessDecisionManager(accessDecisionManager())
                 .expressionHandler(expressionHandler());
@@ -65,6 +69,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http.formLogin();
 //                .and()
             http.httpBasic();
+    }
+
+    /**
+     * favicon customizing
+     */
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().mvcMatchers("/favicon.ico");
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     /**
