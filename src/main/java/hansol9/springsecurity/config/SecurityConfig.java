@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
 //                .mvcMatchers("/", "/info").permitAll()
-                .mvcMatchers("/", "/info","/account/**").permitAll()
+                .mvcMatchers("/", "/info","/account/**", "/signup").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .mvcMatchers("/user").hasRole("USER")
                 // static resource -> WebSecurity
@@ -67,10 +67,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .accessDecisionManager(accessDecisionManager())
                 .expressionHandler(expressionHandler());
 //                .and()
-            http.formLogin();
+            http.formLogin()
+//                    .usernameParameter("my-username")
+//                    .passwordParameter("my-password")
+                    .loginPage("/login")
+                    .permitAll()
+            ;
 //                .and()
             http.httpBasic();
 
+        //csrf disable
+//        http.csrf().disable();
+
+        http.logout()
+//                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+//                .invalidateHttpSession(true)
+//                .deleteCookies()
+        ;
         //SecurityContextHolder Strategy
         //Default -> Thread Local
         //MODE_INHERITABLETHREADLOCAL -> share SecurityContextHolder (sub thread local with thread local)
