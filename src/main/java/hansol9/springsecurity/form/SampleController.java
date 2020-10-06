@@ -4,6 +4,7 @@ import hansol9.springsecurity.account.Account;
 import hansol9.springsecurity.account.AccountContext;
 import hansol9.springsecurity.account.AccountRepository;
 import hansol9.springsecurity.account.UserAccount;
+import hansol9.springsecurity.book.BookRepository;
 import hansol9.springsecurity.common.CurrentUser;
 import hansol9.springsecurity.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class SampleController {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    BookRepository bookRepository;
 
     @GetMapping("/")
     public String index(Model model, @CurrentUser Account account) {
@@ -66,6 +70,7 @@ public class SampleController {
     @GetMapping("/user")
     public String user(Model model, Principal principal) {
         model.addAttribute("message", "Hello User, " + principal.getName());
+        model.addAttribute("books", bookRepository.findCurrentUserBooks());
         return "user";
     }
 
