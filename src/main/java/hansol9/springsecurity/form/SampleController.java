@@ -1,9 +1,13 @@
 package hansol9.springsecurity.form;
 
+import hansol9.springsecurity.account.Account;
 import hansol9.springsecurity.account.AccountContext;
 import hansol9.springsecurity.account.AccountRepository;
+import hansol9.springsecurity.account.UserAccount;
+import hansol9.springsecurity.common.CurrentUser;
 import hansol9.springsecurity.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,12 +28,14 @@ public class SampleController {
     AccountRepository accountRepository;
 
     @GetMapping("/")
-    public String index(Model model, Principal principal) {
-        if (principal == null) {
+    public String index(Model model, @CurrentUser Account account) {
+//    public String index(Model model, @AuthenticationPrincipal UserAccount userAccount) {
+//    public String index(Model model, Principal principal) {
+        if (account == null) {
             model.addAttribute("message", "Hello Spring Security");
         }
         else {
-            model.addAttribute("message", "Hello " + principal.getName());
+            model.addAttribute("message", "Hello " + account.getUsername());
         }
 
         return "index";
