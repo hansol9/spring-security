@@ -1,5 +1,8 @@
 package hansol9.springsecurity.config;
 
+import hansol9.springsecurity.account.AccountService;
+import hansol9.springsecurity.common.LoggingFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
@@ -18,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 
 import javax.servlet.ServletException;
@@ -30,6 +34,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    AccountService accountService;
 
     /* Hierarchical Roles - Admin, User
        1. AccessDecisionManager
@@ -63,6 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //custom filter -> first
+        http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
+
         http.authorizeRequests()
 //                .mvcMatchers("/", "/info").permitAll()
                 .mvcMatchers("/", "/info","/account/**", "/signup").permitAll()
@@ -115,6 +125,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         response.sendRedirect("/access-denied");
                     }
                 });
+
+        //Remember Me
+        http.rememberMe()
+                .userDetailsService(accountService)
+                .key("remember-me-sample");
 
         //SecurityContextHolder Strategy
         //Default -> Thread Local
